@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import Editor from '@monaco-editor/react';
-import { submitCode } from '../../../../utils/submitCode';
 
 interface TestCase {
   input: any[];
@@ -48,10 +47,7 @@ const ProblemPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (problem) {
-      const results = await submitCode(code, problem.testCases);
-      setResults(results);
-    }
+  
   };
 
   return (
