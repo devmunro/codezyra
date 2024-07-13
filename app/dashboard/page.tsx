@@ -21,7 +21,7 @@ const Dashboard: React.FC = () => {
   }, [router]);
 
   const handleDifficultySelection = () => {
-    router.push(`/problem/very-easy`);
+    router.push(`/problems/easy`);
   };
 
   if (!user) {
