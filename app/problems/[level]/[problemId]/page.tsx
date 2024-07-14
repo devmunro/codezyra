@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../../firebase';
-import Editor from '@monaco-editor/react';
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebase";
+import Editor from "@monaco-editor/react";
+import { submitCode } from "../../../../utils/submitCode";
 
 interface TestCase {
   input: any[];
@@ -13,6 +14,8 @@ interface TestCase {
 interface Problem {
   title: string;
   description: string;
+  functionTemplate: string;
+  functionName: string,
   testCases: TestCase[];
 }
 
@@ -21,21 +24,28 @@ const ProblemPage: React.FC = () => {
   const { level, problemId } = params as { level: string; problemId: string };
 
   const [problem, setProblem] = useState<Problem | null>(null);
-  const [code, setCode] = useState<string>('');
+  const [code, setCode] = useState<string>("");
   const [results, setResults] = useState<any[]>([]);
+  const language = "nodejs";
 
   useEffect(() => {
     const fetchProblem = async () => {
       if (level && problemId) {
-        const docRef = doc(db, 'problems', problemId);
+        const docRef = doc(db, "problems", problemId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProblem(docSnap.data() as Problem);
+          const data = docSnap.data() as Problem;
+          data.testCases = data.testCases.map((testCase: any) => ({
+            ...testCase,
+            input: JSON.parse(testCase.input),
+          }));
+          setProblem(data);
+          setCode(data.functionTemplate);
         } else {
-          console.error('No such problem!');
+          console.error("No such problem!");
         }
       } else {
-        console.error('Level or problemId is missing');
+        console.error("Level or problemId is missing");
       }
     };
 
@@ -47,7 +57,16 @@ const ProblemPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-  
+    if (problem) {
+      console.log("Submitting code:", code);
+      const results = await submitCode(code, "nodejs", problem.testCases, problem.functionName);
+      if (results && results.results) {
+        setResults(results.results);
+      } else {
+        console.error("No results returned from submitCode");
+      }
+      console.log("Results:", results);
+    }
   };
 
   return (
@@ -60,9 +79,10 @@ const ProblemPage: React.FC = () => {
             <Editor
               height="40vh"
               defaultLanguage="javascript"
-              defaultValue="// write your code here"
+              value={code}
               onChange={handleCodeChange}
               className="border rounded"
+              theme="vs-dark"
             />
           </div>
           <button
@@ -71,15 +91,21 @@ const ProblemPage: React.FC = () => {
           >
             Submit
           </button>
-          {results.length > 0 && (
+          {results && results.length > 0 && (
             <div className="bg-gray-100 p-4 rounded">
               <h2 className="text-xl font-bold mb-2">Results:</h2>
               {results.map((result, index) => (
-                <div key={index} className={`mb-2 ${result.passed ? 'text-green-500' : 'text-red-500'}`}>
-                  <p>Input: {JSON.stringify(result.input)}</p>
-                  <p>Expected: {JSON.stringify(result.expected)}</p>
-                  <p>Result: {JSON.stringify(result.result)}</p>
-                  <p>Passed: {result.passed ? 'Yes' : 'No'}</p>
+                <div key={index} className={`mb-2 p-2 ${result.passed ? 'bg-green-100' : 'bg-red-100'}`}>
+                  <p><strong>Input:</strong> {JSON.stringify(result.input)}</p>
+                  <p><strong>Expected:</strong> {JSON.stringify(result.expected)}</p>
+                  <p><strong>Result:</strong> {JSON.stringify(result.result)}</p>
+                  <p><strong>Passed:</strong> {result.passed ? 'Yes' : 'No'}</p>
+                  {!result.passed && result.result.includes('SyntaxError') && (
+                    <div className="text-red-500">
+                      <p><strong>Error Message:</strong></p>
+                      <pre>{result.result}</pre>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
