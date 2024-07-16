@@ -15,13 +15,13 @@ interface Problem {
   title: string;
   description: string;
   functionTemplate: string;
-  functionName: string,
+  functionName: string;
   testCases: TestCase[];
 }
 
 const ProblemPage: React.FC = () => {
   const params = useParams();
-  const { level, problemId } = params as { level: string; problemId: string };
+  const { problemId } = params as { problemId: string };
 
   const [problem, setProblem] = useState<Problem | null>(null);
   const [code, setCode] = useState<string>("");
@@ -30,7 +30,7 @@ const ProblemPage: React.FC = () => {
 
   useEffect(() => {
     const fetchProblem = async () => {
-      if (level && problemId) {
+      if (problemId) {
         const docRef = doc(db, "problems", problemId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -50,7 +50,7 @@ const ProblemPage: React.FC = () => {
     };
 
     fetchProblem();
-  }, [level, problemId]);
+  }, [problemId]);
 
   const handleCodeChange = (value: string | undefined) => {
     if (value) setCode(value);
@@ -59,7 +59,12 @@ const ProblemPage: React.FC = () => {
   const handleSubmit = async () => {
     if (problem) {
       console.log("Submitting code:", code);
-      const results = await submitCode(code, "nodejs", problem.testCases, problem.functionName);
+      const results = await submitCode(
+        code,
+        "nodejs",
+        problem.testCases,
+        problem.functionName
+      );
       if (results && results.results) {
         setResults(results.results);
       } else {
@@ -70,9 +75,9 @@ const ProblemPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+    <div className="">
       {problem ? (
-        <div className="bg-white p-8 rounded shadow-md w-full max-w-3xl">
+        <main className="flex-1 bg-gray-800 p-8 m-2 rounded shadow-md ml-8">
           <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
           <p className="mb-6">{problem.description}</p>
           <div className="mb-4">
@@ -95,14 +100,29 @@ const ProblemPage: React.FC = () => {
             <div className="bg-gray-100 p-4 rounded">
               <h2 className="text-xl font-bold mb-2">Results:</h2>
               {results.map((result, index) => (
-                <div key={index} className={`mb-2 p-2 ${result.passed ? 'bg-green-100' : 'bg-red-100'}`}>
-                  <p><strong>Input:</strong> {JSON.stringify(result.input)}</p>
-                  <p><strong>Expected:</strong> {JSON.stringify(result.expected)}</p>
-                  <p><strong>Result:</strong> {JSON.stringify(result.result)}</p>
-                  <p><strong>Passed:</strong> {result.passed ? 'Yes' : 'No'}</p>
-                  {!result.passed && result.result.includes('SyntaxError') && (
+                <div
+                  key={index}
+                  className={`mb-2 p-2 ${
+                    result.passed ? "bg-green-100" : "bg-red-100"
+                  }`}
+                >
+                  <p>
+                    <strong>Input:</strong> {JSON.stringify(result.input)}
+                  </p>
+                  <p>
+                    <strong>Expected:</strong> {JSON.stringify(result.expected)}
+                  </p>
+                  <p>
+                    <strong>Result:</strong> {JSON.stringify(result.result)}
+                  </p>
+                  <p>
+                    <strong>Passed:</strong> {result.passed ? "Yes" : "No"}
+                  </p>
+                  {!result.passed && result.result.includes("SyntaxError") && (
                     <div className="text-red-500">
-                      <p><strong>Error Message:</strong></p>
+                      <p>
+                        <strong>Error Message:</strong>
+                      </p>
                       <pre>{result.result}</pre>
                     </div>
                   )}
@@ -110,7 +130,7 @@ const ProblemPage: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
+        </main>
       ) : (
         <p>Loading...</p>
       )}
