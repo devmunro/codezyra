@@ -1,8 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { auth } from "../../firebase";
-import { User, signOut } from "firebase/auth";
+import { useUser } from "../../context/UserContext";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -13,9 +12,9 @@ interface Problem {
   level: string;
 }
 
-const Dashboard: React.FC = () => {
+const ProblemList: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading } = useUser();
   const [problems, setProblems] = useState<Problem[]>([]);
   const [sortedProblems, setSortedProblems] = useState<Problem[]>([]);
   const [sortCriteria, setSortCriteria] = useState<string>("type");
@@ -23,16 +22,10 @@ const Dashboard: React.FC = () => {
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        router.push("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [loading, user, router]);
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -82,7 +75,7 @@ const Dashboard: React.FC = () => {
     router.push(`/dashboard/problems/${problemId}`);
   };
 
-  if (!user) {
+  if (loading) {
     return <p>Loading...</p>;
   }
 
@@ -91,7 +84,6 @@ const Dashboard: React.FC = () => {
       <main className="flex-1 bg-gray-600 p-8 rounded shadow-md ml-8 border-2">
         <h2 className="text-2xl font-bold mb-4 ">|List of Problems|</h2>
         <div className="flex justify-end items-center text-sm mb-4 space-x-4 ">
-         
           <button
             onClick={() => handleSortChange("level")}
             className="p-2 hover:bg-white hover:text-black border-r-2"
@@ -111,11 +103,11 @@ const Dashboard: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="border-1">
+        <ul className="border-1">
           {sortedProblems.map((problem) => (
-            <div
+            <li
               key={problem.id}
-              className="bg-gray-700 p-2 m-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-600 border-black border-2"
+              className=" p-2 m-2 cursor-pointer hover:bg-gray-500"
               onClick={() => handleProblemClick(problem.id)}
             >
               <div className="flex justify-between gap-2 items-center text-center">
@@ -125,12 +117,13 @@ const Dashboard: React.FC = () => {
                   <p className="text-sm p-2 uppercase">{problem.level}</p>
                 </div>
               </div>
-            </div>
+              <hr></hr>
+            </li>
           ))}
-        </div>
+        </ul>
       </main>
     </div>
   );
 };
 
-export default Dashboard;
+export default ProblemList;

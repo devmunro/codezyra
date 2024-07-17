@@ -1,17 +1,34 @@
 "use client";
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { useRouter } from 'next/navigation';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [name, setName] = useState<string>(''); // New state for name
   const router = useRouter();
 
   const handleSignup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Store additional user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        name: name,
+        badgeProgression: {
+          codingStreak: 0,
+          problemSolver: 0,
+          speedCoder: 0,
+          quizMaster: 0,
+          projectBuilder: 0
+        },
+        createdAt: new Date(),
+      });
+
       router.push('/dashboard');
     } catch (error) {
       console.error("Error signing up: ", error);
@@ -22,6 +39,13 @@ const Signup: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6">Signup</h1>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          className="w-full p-2 border border-gray-300 rounded mb-4"
+        />
         <input
           type="email"
           value={email}

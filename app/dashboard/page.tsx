@@ -1,37 +1,28 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { auth } from "../firebase";
-import { User, signOut } from "firebase/auth";
+import { useEffect } from "react";
+import { useUser } from "../context/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy, faMedal, faStar } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
-interface Problem {
-  id: string;
-  title: string;
-}
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, userData, loading } = useUser();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        router.push("/login");
-      }
-    });
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [loading, user, router]);
 
-    return () => unsubscribe();
-  }, [router]);
-
- 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   if (!user) {
-    return <p>Loading...</p>;
+    return null; // or redirect to login page
   }
 
   const renderCalendar = () => {
@@ -55,23 +46,21 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <div className="container mx-auto flex flex-1 py-8 flex-col space-y-8 ">
+      <div className="container mx-auto flex flex-1 py-8 flex-col space-y-8">
         {/* Badges and Daily Streak Section */}
-
-        <div className="bg-gray-700 p-6 rounded shadow-md flex justify-between items-start gap-4 ">
+        <div className="bg-gray-700 p-6 rounded shadow-md flex justify-between items-start gap-4">
           <div className="flex flex-col items-center border-2 w-1/3 bg-gray-900 p-2">
-            {" "}
             <img
               src="https://avatar.iran.liara.run/public/24"
               className="w-48"
-            ></img>
+              alt="User Avatar"
+            />
             <h1>Welcome {user.email}</h1>
           </div>
           <div className="bg-gray-900 p-8 rounded shadow-md w-1/3">
             <h3 className="text-xl font-bold mb-2">Daily Activity Streak</h3>
             {renderCalendar()}
           </div>
-
           <div className="w-1/3">
             <h3 className="text-xl font-bold mb-2">Badges</h3>
             <p>Display and track your achievements through badges.</p>
@@ -99,34 +88,39 @@ const Dashboard: React.FC = () => {
             className="cursor-pointer bg-gray-700 p-6 rounded hover:bg-gray-600"
           >
             <h3 className="text-xl font-bold mb-2">LeetCode Problems</h3>
-            <p>
-              Practice and improve your coding skills by solving LeetCode
-              problems.
-            </p>
+            <p>Practice and improve your coding skills by solving LeetCode problems.</p>
             <Image
               src="/images/code.png"
               width={500}
               height={500}
-              alt="picture of code laptop"
+              alt="LeetCode Problems"
             />
           </div>
-
           <div
             onClick={() => router.push("/dashboard/projects")}
             className="cursor-pointer bg-gray-700 p-6 rounded hover:bg-gray-600"
           >
             <h3 className="text-xl font-bold mb-2">Projects</h3>
-            <p>
-              Engage in small projects to apply and test your coding knowledge.
-            </p>
+            <p>Engage in small projects to apply and test your coding knowledge.</p>
+            <Image
+              src="/images/projects.png"
+              width={500}
+              height={500}
+              alt="Projects"
+            />
           </div>
-
           <div
             onClick={() => router.push("/dashboard/quizzes")}
             className="cursor-pointer bg-gray-700 p-6 rounded hover:bg-gray-600"
           >
             <h3 className="text-xl font-bold mb-2">Quizzes</h3>
             <p>Test your coding knowledge through interactive quizzes.</p>
+            <Image
+              src="/images/quizzes.png"
+              width={500}
+              height={500}
+              alt="Quizzes"
+            />
           </div>
         </div>
       </div>
