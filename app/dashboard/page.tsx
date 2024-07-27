@@ -22,27 +22,10 @@ const Dashboard: React.FC = () => {
   }
 
   if (!user) {
-    return null; // or redirect to login page
+    return null; 
   }
 
-  const renderCalendar = () => {
-    const daysInMonth = new Date().getDate();
-    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    return (
-      <div className="grid grid-cols-7 gap-1">
-        {days.map((day) => (
-          <div
-            key={day}
-            className={`p-2 text-center rounded ${
-              day % 2 === 0 ? "bg-green-500" : "bg-gray-600"
-            }`}
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
@@ -58,8 +41,8 @@ const Dashboard: React.FC = () => {
             <h1>Welcome {user.email}</h1>
           </div>
           <div className="bg-gray-900 p-8 rounded shadow-md w-1/3">
-            <h3 className="text-xl font-bold mb-2">Daily Activity Streak</h3>
-            {renderCalendar()}
+            <h3 className="text-xl font-bold mb-2">TOTAL PROBLEMS SOLVED</h3>
+            {userData.badgeProgression.problemSolver}
           </div>
           <div className="w-1/3">
             <h3 className="text-xl font-bold mb-2">Badges</h3>

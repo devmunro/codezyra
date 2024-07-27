@@ -82,19 +82,13 @@ const ProblemPage: React.FC = () => {
     if (user) {
       const userRef = doc(db, "users", user.uid);
 
-      // Update daily streak
-      const newDailyStreak = (userData.dailyStreak || 0) + 1;
-      await updateDoc(userRef, {
-        dailyStreak: newDailyStreak,
-      });
-
-      // Update problems solved and add badge if all test cases passed
+            // Update problems solved and add badge if all test cases passed
       const allPassed = results.every((result) => result.passed);
       if (allPassed) {
-        const newProblemsSolved = (userData.problemsSolved || 0) + 1;
+        const newProblemsSolved = (userData.badgeProgression.problemSolver) + 1;
         await updateDoc(userRef, {
-          problemsSolved: newProblemsSolved,
-          badges: arrayUnion("Problem Solver"), // Add the badge if not already present
+          'badgeProgression.problemSolver': newProblemsSolved,
+
         });
       }
     }

@@ -29,7 +29,6 @@ const Signup: React.FC = () => {
       await setDoc(doc(db, "users", user.uid), {
         name: name,
         badgeProgression: {
-          codingStreak: 0,
           problemSolver: 0,
           speedCoder: 0,
           quizMaster: 0,
