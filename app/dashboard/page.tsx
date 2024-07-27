@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <div className="container mx-auto flex flex-1 py-8 flex-col space-y-8">
         {/* Badges and Daily Streak Section */}
-        <div className="bg-gray-700 p-6 rounded shadow-md flex justify-between items-start gap-4">
+        <div className="bg-gray-700 p-6 rounded shadow-md flex  items-start gap-4">
           <div className="flex flex-col items-center border-2 w-1/3 bg-gray-900 p-2">
             <img
               src="https://avatar.iran.liara.run/public/24"
@@ -41,10 +41,7 @@ const Dashboard: React.FC = () => {
             <h1>Welcome {user.email}</h1>
           </div>
           <div className="bg-gray-900 p-8 rounded shadow-md w-1/3">
-            <h3 className="text-xl font-bold mb-2">TOTAL PROBLEMS SOLVED</h3>
-            {userData.badgeProgression.problemSolver}
-          </div>
-          <div className="w-1/3">
+            
             <h3 className="text-xl font-bold mb-2">Badges</h3>
             <p>Display and track your achievements through badges.</p>
             <div className="flex space-x-4 mt-4">
@@ -60,8 +57,12 @@ const Dashboard: React.FC = () => {
                 <FontAwesomeIcon icon={faStar} size="3x" />
                 <span className="mt-2">Project Pro</span>
               </div>
-            </div>
+              <h3 className="text-xl font-bold mb-2 ">TOTAL PROBLEMS SOLVED = {userData.badgeProgression.problemSolver}</h3>
+
+         
           </div>
+          </div>
+          
         </div>
 
         {/* Main Sections */}
