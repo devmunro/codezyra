@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useRouter } from "next/navigation";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -48,18 +48,22 @@ const Signup: React.FC = () => {
       const credential = await signInWithPopup(auth, provider);
       const user = credential.user;
 
-      // Store additional user data in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        name: name,
-        badgeProgression: {
-          codingStreak: 0,
-          problemSolver: 0,
-          speedCoder: 0,
-          quizMaster: 0,
-          projectBuilder: 0,
-        },
-        createdAt: new Date(),
-      });
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName || "Anonymous",
+          badgeProgression: {
+            codingStreak: 0,
+            problemSolver: 0,
+            speedCoder: 0,
+            quizMaster: 0,
+            projectBuilder: 0,
+          },
+          createdAt: new Date(),
+        });
+      }
 
       router.push("/dashboard");
     } catch (error) {
@@ -92,22 +96,21 @@ const Signup: React.FC = () => {
         placeholder="Password"
         className="w-full p-2 border border-gray-300 rounded mb-6"
       />
-      <div className="space-y-8">
+      <button
+        onClick={handleSignup}
+        className="w-full bg-indigo-900 p-2 rounded hover:bg-rose-900"
+      >
+        Signup
+      </button>
+
+      <div className=" flex flex-col items-center">
+        <h2 className="text-center text-xs m-2">Sign up via GITHUB</h2>
         <button
-          onClick={handleSignup}
-          className="w-full bg-indigo-900 p-2 rounded hover:bg-rose-900"
+          onClick={handleGitHubSignup}
+          className=" bg-white hover:bg-rose-900 p-2  rounded w-12"
         >
-          Signup
+          <img src="/images/github-logo.png" />
         </button>
-        <div className=" flex flex-col items-center">
-          <h2 className="text-center text-xs m-2">Sign up via GITHUB</h2>
-          <button
-            onClick={handleGitHubSignup}
-            className=" bg-white hover:bg-rose-900 p-2  rounded w-12"
-          >
-            <img src="/images/github-logo.png" />
-          </button>
-        </div>
       </div>
     </div>
   );
