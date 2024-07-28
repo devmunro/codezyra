@@ -62,7 +62,6 @@ const Signup: React.FC = () => {
       });
 
       router.push("/dashboard");
-
     } catch (error) {
       // Handle Errors here.
       console.log(error);
@@ -70,42 +69,45 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6">Signup</h1>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        />
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="w-full p-2 border border-gray-300 rounded mb-6"
-        />
+    <div className="p-8 rounded shadow-md w-full max-w-md bg-black text-white">
+      <h1 className="text-2xl font-bold mb-6">Signup</h1>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        className="w-full p-2 border border-gray-300 rounded mb-4"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        className="w-full p-2 border border-gray-300 rounded mb-4"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        className="w-full p-2 border border-gray-300 rounded mb-6"
+      />
+      <div className="space-y-8">
         <button
           onClick={handleSignup}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="w-full bg-indigo-900 p-2 rounded hover:bg-rose-900"
         >
           Signup
         </button>
-        <button
-          onClick={handleGitHubSignup}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Github Signup
-        </button>
+        <div className=" flex flex-col items-center">
+          <h2 className="text-center text-xs m-2">Sign up via GITHUB</h2>
+          <button
+            onClick={handleGitHubSignup}
+            className=" bg-white hover:bg-rose-900 p-2  rounded w-12"
+          >
+            <img src="/images/github-logo.png" />
+          </button>
+        </div>
       </div>
     </div>
   );
