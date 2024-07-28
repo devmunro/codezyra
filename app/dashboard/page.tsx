@@ -5,6 +5,7 @@ import { useUser } from "../context/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy, faMedal, faStar } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { posix } from "path";
 
 
 const Dashboard: React.FC = () => {
@@ -33,12 +34,14 @@ const Dashboard: React.FC = () => {
         {/* Badges and Daily Streak Section */}
         <div className="bg-gray-700 p-6 rounded shadow-md flex  items-start gap-4">
           <div className="flex flex-col items-center border-2 w-1/3 bg-gray-900 p-2">
-            <img
-              src="https://avatar.iran.liara.run/public/24"
-              className="w-48"
+            <Image
+              src={user.photoURL}
+              width={200}
+              height={200}
+              className="rounded-full"
               alt="User Avatar"
             />
-            <h1>Welcome {user.email}</h1>
+            <h1>Welcome {user.displayName}</h1>
           </div>
           <div className="bg-gray-900 p-8 rounded shadow-md w-1/3">
             

@@ -53,7 +53,7 @@ const Signup: React.FC = () => {
 
       if (!userDoc.exists()) {
         await setDoc(userRef, {
-          name: user.displayName || "Anonymous",
+          name: user.displayName,
           badgeProgression: {
             codingStreak: 0,
             problemSolver: 0,
